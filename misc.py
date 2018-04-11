@@ -57,7 +57,7 @@ else:
     object_or_InstanceType = types.InstanceType
 
 # ===========================================================================
-import gc, os, resource, sys
+import codecs, gc, os, resource, sys
 
 pageSize = resource.getpagesize()
 megabyte = 1024 * 1024
@@ -223,7 +223,8 @@ def gOpenOut(fname, encoding=None):
         out = os.popen('gzip -fc >%s' % fname, 'w')
 #       out = gzip.open(fname, 'w')
     else:
-        out = io.open(fname, 'w', encoding=encoding)
+        encoder, decoder, streamReader, streamWriter = codecs.lookup(encoding)
+        out = streamWriter(out)
     return out
 
 def gOpenIn(fname, encoding=None):
@@ -237,7 +238,8 @@ def gOpenIn(fname, encoding=None):
     else:
         inp = io.open(fname)
     if encoding:
-        inp = io.open(fname, encoding=encoding)
+        encoder, decoder, streamReader, streamWriter = codecs.lookup(encoding)
+        inp = streamReader(inp)
     return inp
 
 # def gOpenOut(fname, encoding=None):
